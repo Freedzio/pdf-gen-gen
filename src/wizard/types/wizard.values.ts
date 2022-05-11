@@ -1,0 +1,10 @@
+import { Content, Margins } from 'pdfmake/interfaces';
+
+export type Wizard = {
+	hasHeader: boolean;
+	hasFooter: boolean;
+	header: Content;
+	footer: Content;
+	content: Content;
+	pageMargins: [string, string, string, string];
+};
