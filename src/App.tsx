@@ -58,12 +58,6 @@ function App() {
 		]);
 	};
 
-	const onContentTypeChange = (
-		contentType: string,
-		rowIndex: number,
-		columnIndex: number
-	) => {};
-
 	return (
 		<HStack>
 			<VStack w='50%' padding={5}>
