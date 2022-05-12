@@ -1,30 +1,16 @@
 import './App.scss';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import {
-	Button,
-	Checkbox,
-	Flex,
-	Heading,
-	HStack,
-	Input,
-	Select,
-	Text,
-	View,
-	VStack
-} from 'native-base';
+import { Button, Checkbox, HStack, Text, VStack } from 'native-base';
 import { Controller, useForm } from 'react-hook-form';
 import { Wizard } from './wizard/types/wizard.values';
 import { createDef } from './wizard-to-def';
-import { mapFormField } from './wizard/helpers/map-form-field';
 import { PageMarginsControl } from './wizard/components/page-margins.control';
-import { Column, Content, ContentStack } from 'pdfmake/interfaces';
-import { InputController } from './wizard/components/input.controller';
 import { LabelledInput } from './wizard/components/labelled-input.component';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function App() {
-	const { watch, control, register, setValue } = useForm<Wizard>({
+	const { watch, control, setValue } = useForm<Wizard>({
 		defaultValues: {
 			content: [{ text: '' }],
 			header: [],

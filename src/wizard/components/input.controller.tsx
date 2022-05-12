@@ -1,4 +1,3 @@
-import { isNumber } from 'lodash';
 import { IInputProps, Input } from 'native-base';
 import React from 'react';
 import { Controller } from 'react-hook-form';

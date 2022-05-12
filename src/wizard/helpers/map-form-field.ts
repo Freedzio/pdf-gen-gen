@@ -1,5 +1,4 @@
 import { ControllerRenderProps, Path } from 'react-hook-form';
-import { boolean } from 'yup';
 
 export const mapFormField = <S>(
 	field: ControllerRenderProps<S, Path<S>>,

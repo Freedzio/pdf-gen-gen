@@ -1,7 +1,5 @@
-import { HStack, IInputProps, Input } from 'native-base';
+import { HStack, IInputProps } from 'native-base';
 import React from 'react';
-import { Controller } from 'react-hook-form';
-import { mapFormField } from '../helpers/map-form-field';
 import { InputController } from './input.controller';
 
 type Props = {
