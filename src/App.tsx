@@ -14,7 +14,7 @@ function App() {
 		defaultValues: {
 			content: [{ text: '' }],
 			header: [],
-			footer: [{ text: 'lol footerek' }],
+			footer: [{ text: 'lol footer' }],
 			pageMargins: ['40', '40', '40', '40']
 		}
 	});
