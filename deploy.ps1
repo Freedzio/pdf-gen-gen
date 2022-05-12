@@ -1,4 +1,6 @@
+yarn react-scripts build
+cd ../pdf-gen-gen-out
 git add .
-git commit -m "auto commit"
-git push origin
-git push vps
+git commit -m "deploy"
+git push
+cd ../pdf-gen-gen

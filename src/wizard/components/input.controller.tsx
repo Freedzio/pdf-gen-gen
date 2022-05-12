@@ -7,6 +7,7 @@ export interface MyInputProps {
 	control: any;
 	name: string;
 	isNumber?: boolean;
+	isPercent?: boolean;
 	inputProps?: IInputProps;
 }
 
@@ -14,7 +15,8 @@ export const InputController: React.FC<MyInputProps> = ({
 	name,
 	control,
 	inputProps,
-	isNumber
+	isNumber,
+	isPercent
 }) => {
 	return (
 		<Controller
@@ -22,7 +24,7 @@ export const InputController: React.FC<MyInputProps> = ({
 			name={name}
 			render={({ field }) => (
 				<Input
-					{...mapFormField(field as any, isNumber)}
+					{...mapFormField(field as any, isNumber, isPercent)}
 					ref={undefined}
 					{...inputProps}
 				/>

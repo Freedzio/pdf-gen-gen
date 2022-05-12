@@ -2,14 +2,16 @@ import { ControllerRenderProps, Path } from 'react-hook-form';
 
 export const mapFormField = <S>(
 	field: ControllerRenderProps<S, Path<S>>,
-	isNumber?: boolean
+	isNumber?: boolean,
+	isPercent?: boolean
 ) => {
-	(field as any).onChangeText = !!isNumber
-		? (v: any) => field.onChange(parseInt(v))
-		: field.onChange;
-	(field as any).onValueChange = !!isNumber
-		? (v: any) => field.onChange(parseInt(v))
-		: field.onChange;
+	let changeHandler = field.onChange;
+	if (!!isNumber)
+		changeHandler = (v: any) =>
+			field.onChange(isNaN(parseInt(v)) ? 0 : parseInt(v));
+
+	(field as any).onChangeText = changeHandler;
+	(field as any).onValueChange = changeHandler;
 
 	return field;
 };

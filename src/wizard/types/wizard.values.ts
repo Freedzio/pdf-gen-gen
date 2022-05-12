@@ -8,3 +8,5 @@ export type Wizard = {
 	content: Content;
 	pageMargins: [string, string, string, string];
 };
+
+export type Section = 'header' | 'content' | 'footer';
