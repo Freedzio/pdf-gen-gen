@@ -1,4 +1,4 @@
-import { Content, Margins } from 'pdfmake/interfaces';
+import { Content, ContentStack, Margins } from 'pdfmake/interfaces';
 
 export type Wizard = {
 	hasHeader: boolean;

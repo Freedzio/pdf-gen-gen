@@ -1,26 +1,40 @@
 import './App.scss';
-import { useState } from 'react';
-import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { Checkbox, Heading, HStack, Input, VStack } from 'native-base';
+import {
+	Button,
+	Checkbox,
+	Flex,
+	Heading,
+	HStack,
+	Input,
+	Select,
+	Text,
+	View,
+	VStack
+} from 'native-base';
 import { Controller, useForm } from 'react-hook-form';
 import { Wizard } from './wizard/types/wizard.values';
 import { createDef } from './wizard-to-def';
 import { mapFormField } from './wizard/helpers/map-form-field';
+import { PageMarginsControl } from './wizard/components/page-margins.control';
+import { Column, Content, ContentStack } from 'pdfmake/interfaces';
+import { InputController } from './wizard/components/input.controller';
+import { LabelledInput } from './wizard/components/labelled-input.component';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function App() {
-	const { watch, control, register } = useForm<Wizard>({
+	const { watch, control, register, setValue } = useForm<Wizard>({
 		defaultValues: {
-			content: [{ text: 'vvvv' }],
-			header: [{ text: 'lol headerek' }],
+			content: [{ text: '' }],
+			header: [],
 			footer: [{ text: 'lol footerek' }],
-			pageMargins: ['0', '0', '0', '0']
+			pageMargins: ['40', '40', '40', '40']
 		}
 	});
 
-	const def = createDef(watch() as any);
+	const values = watch();
+	const def = createDef(values as Wizard);
 	const pdfDocGenerator = pdfMake.createPdf(def);
 
 	pdfDocGenerator.getDataUrl((dataUrl) => {
@@ -31,6 +45,24 @@ function App() {
 		iframe.src = dataUrl;
 		targetElement?.replaceChildren(iframe);
 	});
+
+	const addHeaderRow = () => {
+		// @ts-ignore
+		setValue('header', [...(values.header as any), { columns: [{}] }]);
+	};
+
+	const addHeaderColumn = (rowIndex: number) => {
+		setValue(`header.${rowIndex}.columns`, [
+			...(values.header as any)[rowIndex].columns,
+			{}
+		]);
+	};
+
+	const onContentTypeChange = (
+		contentType: string,
+		rowIndex: number,
+		columnIndex: number
+	) => {};
 
 	return (
 		<HStack>
@@ -44,6 +76,41 @@ function App() {
 						</Checkbox>
 					)}
 				/>
+				{!!values.hasHeader && (
+					<VStack>
+						{(values.header as any).map((row: any, rowIndex: number) => (
+							<HStack marginY={2} flexWrap='wrap'>
+								{(row.columns as any).map(
+									(column: any, columnIndex: number) => (
+										<VStack>
+											<Text>Column {columnIndex + 1}</Text>
+											<LabelledInput
+												label='Content'
+												control={control}
+												inputProps={{ marginX: 2 }}
+												name={`header.${rowIndex}.columns.${columnIndex}.text`}
+											/>
+											<LabelledInput
+												isNumber
+												label='Margin'
+												control={control}
+												inputProps={{ marginX: 2 }}
+												name={`header.${rowIndex}.columns.${columnIndex}.margin`}
+											/>
+										</VStack>
+									)
+								)}
+								<Button
+									alignSelf='end'
+									onPress={() => addHeaderColumn(rowIndex)}
+								>
+									Add column
+								</Button>
+							</HStack>
+						))}
+						<Button onPress={addHeaderRow}>Add row</Button>
+					</VStack>
+				)}
 				<Controller
 					control={control as any}
 					name='hasFooter'
@@ -53,61 +120,7 @@ function App() {
 						</Checkbox>
 					)}
 				/>
-				Page margins
-				<HStack alignItems='center'>
-					Left:
-					<Controller
-						control={control as any}
-						name='pageMargins.0'
-						render={({ field }) => (
-							<Input
-								{...mapFormField(field as any)}
-								ref={undefined}
-								marginX={3}
-								width={60}
-							/>
-						)}
-					/>
-					Top:
-					<Controller
-						control={control as any}
-						name='pageMargins.1'
-						render={({ field }) => (
-							<Input
-								{...mapFormField(field as any)}
-								ref={undefined}
-								marginX={3}
-								width={60}
-							/>
-						)}
-					/>
-					Right:
-					<Controller
-						control={control as any}
-						name='pageMargins.2'
-						render={({ field }) => (
-							<Input
-								{...mapFormField(field as any)}
-								ref={undefined}
-								marginX={3}
-								width={60}
-							/>
-						)}
-					/>
-					Bottom:
-					<Controller
-						control={control as any}
-						name='pageMargins.3'
-						render={({ field }) => (
-							<Input
-								{...mapFormField(field as any)}
-								ref={undefined}
-								marginX={3}
-								width={60}
-							/>
-						)}
-					/>
-				</HStack>
+				<PageMarginsControl control={control} />
 			</VStack>
 			<VStack w='50%'>
 				<div id='iframeContainer'></div>
