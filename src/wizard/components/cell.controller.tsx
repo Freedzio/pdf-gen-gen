@@ -1,4 +1,4 @@
-import { VStack, Text } from 'native-base';
+import { VStack, Text, HStack } from 'native-base';
 import React from 'react';
 import { Section } from '../types/wizard.values';
 import { LabelledInput } from './labelled-input.component';
@@ -29,17 +29,39 @@ export const CellController: React.FC<Props> = ({
 				name={`${section}.${rowIndex}.columns.${columnIndex}.text`}
 			/>
 			<LabelledInput
-				isNumber
-				label='Margin'
-				control={control}
-				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.margin`}
-			/>
-			<LabelledInput
 				label='Width'
 				control={control}
 				inputProps={inputProps}
 				name={`${section}.${rowIndex}.columns.${columnIndex}.width`}
+			/>
+			<Text alignSelf='flex-start'>Margins</Text>
+			<LabelledInput
+				isNumber
+				label='Left:'
+				control={control}
+				inputProps={inputProps}
+				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.0`}
+			/>
+			<LabelledInput
+				isNumber
+				label='Top:'
+				control={control}
+				inputProps={inputProps}
+				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.1`}
+			/>
+			<LabelledInput
+				isNumber
+				label='Right:'
+				control={control}
+				inputProps={inputProps}
+				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.2`}
+			/>
+			<LabelledInput
+				isNumber
+				label='Bottom:'
+				control={control}
+				inputProps={inputProps}
+				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.3`}
 			/>
 		</VStack>
 	);

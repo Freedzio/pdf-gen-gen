@@ -1,6 +1,7 @@
 import { HStack, IInputProps } from 'native-base';
 import React from 'react';
 import { InputController } from './input.controller';
+import { LabelledInput } from './labelled-input.component';
 
 type Props = {
 	control: any;
@@ -12,26 +13,26 @@ export const PageMarginsControl: React.FC<Props> = ({ control }) => {
 		<>
 			Page margins
 			<HStack alignItems='center'>
-				Left:
-				<InputController
+				<LabelledInput
+					label='Left:'
 					control={control}
 					name='pageMargins.0'
 					inputProps={inputProps}
 				/>
-				Top:
-				<InputController
+				<LabelledInput
+					label='Top:'
 					control={control}
 					name='pageMargins.1'
 					inputProps={inputProps}
 				/>
-				Right:
-				<InputController
+				<LabelledInput
+					label='Right:'
 					control={control}
 					name='pageMargins.2'
 					inputProps={inputProps}
 				/>
-				Bottom:
-				<InputController
+				<LabelledInput
+					label='Bottom:'
 					control={control}
 					name='pageMargins.3'
 					inputProps={inputProps}
