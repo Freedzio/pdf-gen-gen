@@ -7,7 +7,7 @@ import { CellController } from './cell.controller';
 type Props = {
 	control: any;
 	setValue: (a: any, b: any) => void;
-	getValues: (key: string) => void;
+	getValues: (key: string) => any;
 	values: any;
 	section: string;
 };
@@ -39,23 +39,17 @@ export const SectionController: React.FC<Props> = ({
 	values,
 	section
 }) => {
-	const addSectionRow = () => {
-		// @ts-ignore
-		setValue(section, [
-			...(getValues(section) as any),
-			{ columns: [textCell] }
-		]);
-	};
+	const rows = getValues(section);
+
+	const getRowColumns = (rowIndex: number) => rows[rowIndex].columns;
+
+	const addSectionRow = () =>
+		setValue(getRowName(rows.length), { columns: [textCell] });
 
 	const getRowName = (rowIndex: number) => `${section}.${rowIndex}`;
 
-	const addSectionColumn = (rowIndex: number) => {
-		const rowName = getRowName(rowIndex);
-		setValue(`${rowName}.columns`, [
-			...(getValues(rowName) as any).columns,
-			textCell
-		]);
-	};
+	const addSectionColumn = (rowIndex: number) =>
+		setValue(getColumnName(rowIndex, getRowColumns(rowIndex).length), textCell);
 
 	const getColumnName = (rowIndex: number, columnIndex: number) =>
 		`${getRowName(rowIndex)}.columns.${columnIndex}`;
