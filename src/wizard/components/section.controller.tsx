@@ -27,6 +27,11 @@ const stackCell = {
 	stack: []
 };
 
+const cellDict = {
+	text: textCell,
+	stack: stackCell
+};
+
 export const SectionController: React.FC<Props> = ({
 	control,
 	setValue,
@@ -34,7 +39,7 @@ export const SectionController: React.FC<Props> = ({
 	values,
 	section
 }) => {
-	const addSectionRow = (section: string) => {
+	const addSectionRow = () => {
 		// @ts-ignore
 		setValue(section, [
 			...(getValues(section) as any),
@@ -42,12 +47,18 @@ export const SectionController: React.FC<Props> = ({
 		]);
 	};
 
-	const addSectionColumn = (section: string, rowIndex: number) => {
-		setValue(`${section}.${rowIndex}.columns`, [
-			...(getValues(section) as any)[rowIndex].columns,
+	const getRowName = (rowIndex: number) => `${section}.${rowIndex}`;
+
+	const addSectionColumn = (rowIndex: number) => {
+		const rowName = getRowName(rowIndex);
+		setValue(`${rowName}.columns`, [
+			...(getValues(rowName) as any).columns,
 			textCell
 		]);
 	};
+
+	const getColumnName = (rowIndex: number, columnIndex: number) =>
+		`${getRowName(rowIndex)}.columns.${columnIndex}`;
 
 	return (
 		<VStack borderStyle='solid' borderWidth={2} borderColor='black'>
@@ -67,26 +78,23 @@ export const SectionController: React.FC<Props> = ({
 					</HStack>
 					<HStack flexWrap='wrap'>
 						{(row.columns as any).map((column: any, columnIndex: number) => {
-							const namePrefix = `${section}.${rowIndex}.columns.${columnIndex}`;
+							const onTypeChange = (type: ContentType) => {};
 							return (
 								<CellController
 									columnIndex={columnIndex}
 									control={control}
 									key={`c${columnIndex}`}
-									namePrefix={namePrefix}
+									namePrefix={getColumnName(rowIndex, columnIndex)}
 								/>
 							);
 						})}
-						<Button
-							alignSelf='end'
-							onPress={() => addSectionColumn(section, rowIndex)}
-						>
+						<Button alignSelf='end' onPress={() => addSectionColumn(rowIndex)}>
 							Add column
 						</Button>
 					</HStack>
 				</VStack>
 			))}
-			<Button onPress={() => addSectionRow(section)}>Add row</Button>
+			<Button onPress={addSectionRow}>Add row</Button>
 		</VStack>
 	);
 };
