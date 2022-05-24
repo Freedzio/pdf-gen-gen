@@ -20,12 +20,6 @@ function App() {
 		}
 	});
 
-	// @ts-ignore
-	const {} = useFieldArray({
-		control,
-		name: 'header'
-	});
-
 	const values = watch();
 	const def = createDef(values as Wizard);
 	const pdfDocGenerator = pdfMake.createPdf(def);
@@ -63,7 +57,6 @@ function App() {
 						setValue={setValue}
 						getValues={getValues}
 						section='header'
-						values={values}
 					/>
 				)}
 				<SectionController
@@ -71,7 +64,6 @@ function App() {
 					setValue={setValue}
 					getValues={getValues}
 					section='content'
-					values={values}
 				/>
 				<View marginY={4}>
 					<Controller
@@ -90,7 +82,6 @@ function App() {
 						setValue={setValue}
 						getValues={getValues}
 						section='footer'
-						values={values}
 					/>
 				)}
 			</VStack>

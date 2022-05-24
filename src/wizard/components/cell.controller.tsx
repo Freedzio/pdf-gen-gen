@@ -1,6 +1,5 @@
-import { VStack, Text, HStack, Select, IInputProps } from 'native-base';
+import { VStack, Text, HStack, Select } from 'native-base';
 import React, { useState } from 'react';
-import { Section } from '../types/wizard.values';
 import { LabelledInput } from './labelled-input.component';
 import { ContentType } from './section.controller';
 
@@ -8,12 +7,14 @@ type Props = {
 	columnIndex: number;
 	control: any;
 	namePrefix: string;
+	onContentTypeChange: (namePrefix: string, contentType: ContentType) => void;
 };
 
 export const CellController: React.FC<Props> = ({
 	columnIndex,
 	control,
-	namePrefix
+	namePrefix,
+	onContentTypeChange
 }) => {
 	const inputProps = {
 		marginX: 2,
@@ -22,7 +23,12 @@ export const CellController: React.FC<Props> = ({
 
 	const contentTypes: ContentType[] = ['text', 'stack'];
 
-	const [selectedType, setSelectedType] = useState('text');
+	const [selectedType, setSelectedType] = useState<ContentType>('text');
+
+	const onSelectChange = (contentType: string) => {
+		setSelectedType(contentType as ContentType);
+		onContentTypeChange(namePrefix, contentType as ContentType);
+	};
 
 	return (
 		<VStack
@@ -39,7 +45,7 @@ export const CellController: React.FC<Props> = ({
 				</Text>
 				<Select
 					selectedValue={selectedType}
-					onValueChange={setSelectedType}
+					onValueChange={onSelectChange}
 					{...inputProps}
 				>
 					{contentTypes.map((ct) => (

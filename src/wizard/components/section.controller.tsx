@@ -8,7 +8,6 @@ type Props = {
 	control: any;
 	setValue: (a: any, b: any) => void;
 	getValues: (key: string) => any;
-	values: any;
 	section: string;
 };
 
@@ -16,7 +15,7 @@ export type ContentType = 'stack' | 'text';
 
 const textCell = {
 	text: 'New column',
-	width: 'auto',
+	width: '*',
 	margin: [10, 10, 10, 10],
 	fontSize: 14,
 	lineHeight: 1,
@@ -36,7 +35,6 @@ export const SectionController: React.FC<Props> = ({
 	control,
 	setValue,
 	getValues,
-	values,
 	section
 }) => {
 	const rows = getValues(section);
@@ -54,9 +52,17 @@ export const SectionController: React.FC<Props> = ({
 	const getColumnName = (rowIndex: number, columnIndex: number) =>
 		`${getRowName(rowIndex)}.columns.${columnIndex}`;
 
+	const onContentTypeChange = (namePrefix: string, contentType: ContentType) =>
+		setValue(namePrefix, cellDict[contentType]);
+
+	const isCellOfType = (
+		namePrefix: string,
+		contentType: ContentType
+	): boolean => Object.hasOwn(getValues(namePrefix), contentType);
+
 	return (
 		<VStack borderStyle='solid' borderWidth={2} borderColor='black'>
-			<Text fontSize='3xl'>{capitalize(section)}</Text>
+			{/* <Text fontSize='3xl'>{capitalize(section)}</Text> */}
 			{(getValues(section) as any)?.map((row: any, rowIndex: number) => (
 				<VStack
 					borderTopWidth={2}
@@ -72,15 +78,28 @@ export const SectionController: React.FC<Props> = ({
 					</HStack>
 					<HStack flexWrap='wrap'>
 						{(row.columns as any).map((column: any, columnIndex: number) => {
-							const onTypeChange = (type: ContentType) => {};
-							return (
-								<CellController
-									columnIndex={columnIndex}
-									control={control}
-									key={`c${columnIndex}`}
-									namePrefix={getColumnName(rowIndex, columnIndex)}
-								/>
-							);
+							const namePrefix = getColumnName(rowIndex, columnIndex);
+							if (isCellOfType(namePrefix, 'text')) {
+								return (
+									<CellController
+										onContentTypeChange={onContentTypeChange}
+										columnIndex={columnIndex}
+										control={control}
+										key={`c${columnIndex}`}
+										namePrefix={namePrefix}
+									/>
+								);
+							}
+							if (isCellOfType(namePrefix, 'stack')) {
+								return (
+									<SectionController
+										control={control}
+										setValue={setValue}
+										getValues={getValues}
+										section={`${namePrefix}.stack`}
+									/>
+								);
+							}
 						})}
 						<Button alignSelf='end' onPress={() => addSectionColumn(rowIndex)}>
 							Add column
