@@ -7,49 +7,84 @@ import { CellController } from './cell.controller';
 type Props = {
 	control: any;
 	setValue: (a: any, b: any) => void;
+	getValues: (key: string) => void;
 	values: any;
-	section: Section;
+	section: string;
+};
+
+export type ContentType = 'stack' | 'text';
+
+const textCell = {
+	text: 'New column',
+	width: 'auto',
+	margin: [10, 10, 10, 10],
+	fontSize: 14,
+	lineHeight: 1,
+	color: 'black'
+};
+
+const stackCell = {
+	stack: []
 };
 
 export const SectionController: React.FC<Props> = ({
 	control,
 	setValue,
+	getValues,
 	values,
 	section
 }) => {
-	const addSectionRow = (section: Section) => {
+	const addSectionRow = (section: string) => {
 		// @ts-ignore
-		setValue(section, [...(values[section] as any), { columns: [{}] }]);
+		setValue(section, [
+			...(getValues(section) as any),
+			{ columns: [textCell] }
+		]);
 	};
 
-	const addSectionColumn = (section: Section, rowIndex: number) => {
+	const addSectionColumn = (section: string, rowIndex: number) => {
 		setValue(`${section}.${rowIndex}.columns`, [
-			...(values[section as any] as any)[rowIndex].columns,
-			{}
+			...(getValues(section) as any)[rowIndex].columns,
+			textCell
 		]);
 	};
 
 	return (
-		<VStack marginBottom={10}>
-			<Text fontSize='2xl'>{capitalize(section)}</Text>
-
-			{(values[section as any] as any)?.map((row: any, rowIndex: number) => (
-				<HStack marginY={2} flexWrap='wrap'>
-					{(row.columns as any).map((column: any, columnIndex: number) => (
-						<CellController
-							rowIndex={rowIndex}
-							columnIndex={columnIndex}
-							control={control}
-							section={section}
-						/>
-					))}
-					<Button
-						alignSelf='end'
-						onPress={() => addSectionColumn(section, rowIndex)}
-					>
-						Add column
-					</Button>
-				</HStack>
+		<VStack borderStyle='solid' borderWidth={2} borderColor='black'>
+			<Text fontSize='3xl'>{capitalize(section)}</Text>
+			{(getValues(section) as any)?.map((row: any, rowIndex: number) => (
+				<VStack
+					borderTopWidth={2}
+					borderColor='black'
+					borderStyle='solid'
+					key={`r${rowIndex}`}
+				>
+					<HStack>
+						<Text fontSize='xl'>Row {rowIndex + 1}</Text>
+						<Button marginLeft={2} colorScheme='danger' size='xs'>
+							Delete row
+						</Button>
+					</HStack>
+					<HStack flexWrap='wrap'>
+						{(row.columns as any).map((column: any, columnIndex: number) => {
+							const namePrefix = `${section}.${rowIndex}.columns.${columnIndex}`;
+							return (
+								<CellController
+									columnIndex={columnIndex}
+									control={control}
+									key={`c${columnIndex}`}
+									namePrefix={namePrefix}
+								/>
+							);
+						})}
+						<Button
+							alignSelf='end'
+							onPress={() => addSectionColumn(section, rowIndex)}
+						>
+							Add column
+						</Button>
+					</HStack>
+				</VStack>
 			))}
 			<Button onPress={() => addSectionRow(section)}>Add row</Button>
 		</VStack>

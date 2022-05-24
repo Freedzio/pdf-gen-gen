@@ -1,38 +1,81 @@
-import { VStack, Text, HStack } from 'native-base';
-import React from 'react';
+import { VStack, Text, HStack, Select, IInputProps } from 'native-base';
+import React, { useState } from 'react';
 import { Section } from '../types/wizard.values';
 import { LabelledInput } from './labelled-input.component';
+import { ContentType } from './section.controller';
 
 type Props = {
-	rowIndex: number;
 	columnIndex: number;
 	control: any;
-	section: Section;
+	namePrefix: string;
 };
 
 export const CellController: React.FC<Props> = ({
-	rowIndex,
 	columnIndex,
 	control,
-	section
+	namePrefix
 }) => {
 	const inputProps = {
-		marginX: 2
+		marginX: 2,
+		width: '169px'
 	};
+
+	const contentTypes: ContentType[] = ['text', 'stack'];
+
+	const [selectedType, setSelectedType] = useState('text');
+
 	return (
-		<VStack alignItems='flex-end'>
+		<VStack
+			alignItems='flex-end'
+			borderRightWidth={2}
+			borderTopWidth={2}
+			borderColor='black'
+			borderStyle='solid'
+		>
 			<Text alignSelf='flex-start'>Column {columnIndex + 1}</Text>
+			<HStack alignItems='center'>
+				<Text w='20%' alignSelf='flex-start'>
+					Type
+				</Text>
+				<Select
+					selectedValue={selectedType}
+					onValueChange={setSelectedType}
+					{...inputProps}
+				>
+					{contentTypes.map((ct) => (
+						<Select.Item key={ct} label={ct} value={ct} />
+					))}
+				</Select>
+			</HStack>
 			<LabelledInput
 				label='Content'
 				control={control}
 				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.text`}
+				name={`${namePrefix}.text`}
 			/>
 			<LabelledInput
 				label='Width'
 				control={control}
 				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.width`}
+				name={`${namePrefix}.width`}
+			/>
+			<LabelledInput
+				label='Font size'
+				control={control}
+				inputProps={inputProps}
+				name={`${namePrefix}.fontSize`}
+			/>
+			<LabelledInput
+				label='Line height'
+				control={control}
+				inputProps={inputProps}
+				name={`${namePrefix}.lineHeight`}
+			/>
+			<LabelledInput
+				label='Color'
+				control={control}
+				inputProps={inputProps}
+				name={`${namePrefix}.color`}
 			/>
 			<Text alignSelf='flex-start'>Margins</Text>
 			<LabelledInput
@@ -40,28 +83,28 @@ export const CellController: React.FC<Props> = ({
 				label='Left:'
 				control={control}
 				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.0`}
+				name={`${namePrefix}.margin.0`}
 			/>
 			<LabelledInput
 				isNumber
 				label='Top:'
 				control={control}
 				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.1`}
+				name={`${namePrefix}.margin.1`}
 			/>
 			<LabelledInput
 				isNumber
 				label='Right:'
 				control={control}
 				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.2`}
+				name={`${namePrefix}.margin.2`}
 			/>
 			<LabelledInput
 				isNumber
 				label='Bottom:'
 				control={control}
 				inputProps={inputProps}
-				name={`${section}.${rowIndex}.columns.${columnIndex}.margin.3`}
+				name={`${namePrefix}.margin.3`}
 			/>
 		</VStack>
 	);
