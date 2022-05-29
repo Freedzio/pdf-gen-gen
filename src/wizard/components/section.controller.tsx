@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Col, Row } from 'reactstrap';
+import React, { CSSProperties } from 'react';
+import { Button, Col, Input, Row } from 'reactstrap';
 import { TextController } from './text.controller';
 
 type Props = {
@@ -28,6 +28,13 @@ const cellDict = {
 	text: textCell,
 	stack: stackCell
 };
+
+const inputStyle: CSSProperties = {
+	marginLeft: 2,
+	width: '169px'
+};
+
+const contentTypes: ContentType[] = ['text', 'stack'];
 
 export const SectionController: React.FC<Props> = ({
 	control,
@@ -73,55 +80,101 @@ export const SectionController: React.FC<Props> = ({
 		setValue(section, newSection);
 	};
 
+	const getCellController = (namePrefix: string) => {
+		if (isCellOfType(namePrefix, 'text')) {
+			return (
+				<TextController
+					inputStyle={inputStyle}
+					control={control}
+					namePrefix={namePrefix}
+				/>
+			);
+		}
+
+		if (isCellOfType(namePrefix, 'stack')) {
+			return (
+				<SectionController
+					control={control}
+					setValue={setValue}
+					getValues={getValues}
+					section={`${namePrefix}.stack`}
+				/>
+			);
+		}
+	};
+
 	return (
-		<Col
-			style={{
-				borderStyle: 'solid',
-				borderWidth: 2,
-				borderColor: 'black'
-			}}
-		>
-			{(getValues(section) as any)?.map((row: any, rowIndex: number) => (
-				<Row key={`r${rowIndex}`}>
-					<Col>
-						<span>Row {rowIndex + 1}</span>
-						<Button onClick={() => deleteRow(rowIndex)}>Delete row</Button>
-						<Row>
-							{(row.columns as any).map((column: any, columnIndex: number) => {
-								const namePrefix = getColumnName(rowIndex, columnIndex);
+		<Row>
+			<Col>
+				{(getValues(section) as any)?.map((row: any, rowIndex: number) => (
+					<Row
+						key={`r${rowIndex}`}
+						style={{
+							borderStyle: 'solid',
+							borderRightWidth: 2,
+							borderColor: 'black'
+						}}
+					>
+						<Col>
+							<Row>
+								<Col>
+									<span>Row {rowIndex + 1}</span>
+								</Col>
+								<Col sm='auto'>
+									<Button onClick={() => deleteRow(rowIndex)} color='danger'>
+										Delete row
+									</Button>
+								</Col>
+							</Row>
+							<Row>
+								{(row.columns as any).map(
+									(column: any, columnIndex: number) => {
+										const namePrefix = getColumnName(rowIndex, columnIndex);
 
-								if (isCellOfType(namePrefix, 'text')) {
-									return (
-										<TextController
-											onContentTypeChange={onContentTypeChange}
-											columnIndex={columnIndex}
-											control={control}
-											namePrefix={namePrefix}
-										/>
-									);
-								}
+										return (
+											<Col>
+												<span className='align-self-start'>
+													Column {columnIndex + 1}
+												</span>
 
-								if (isCellOfType(namePrefix, 'stack')) {
-									return (
-										<SectionController
-											control={control}
-											setValue={setValue}
-											getValues={getValues}
-											section={`${namePrefix}.stack`}
-										/>
-									);
-								}
-							})}
-							<Col>
-								<Button onClick={() => addSectionColumn(rowIndex)}>
-									Add column
-								</Button>
-							</Col>
-						</Row>
-					</Col>
-				</Row>
-			))}
-			<Button onClick={() => addSectionRow()}>Add row</Button>
-		</Col>
+												<div className='d-flex align-items-center justify-content-between'>
+													<span className='align-self-start'>Type</span>
+													<Input
+														type='select'
+														style={inputStyle}
+														onChange={(e) =>
+															onContentTypeChange(
+																namePrefix,
+																e.target.value as ContentType
+															)
+														}
+													>
+														{contentTypes.map((ct) => (
+															<option key={ct} label={ct} value={ct} />
+														))}
+													</Input>
+												</div>
+												{getCellController(namePrefix)}
+											</Col>
+										);
+									}
+								)}
+								<Col>
+									<Button
+										onClick={() => addSectionColumn(rowIndex)}
+										color='primary'
+									>
+										Add column
+									</Button>
+								</Col>
+							</Row>
+						</Col>
+					</Row>
+				))}
+				<Button onClick={() => addSectionRow()} color='primary'>
+					Add row
+				</Button>
+			</Col>
+		</Row>
 	);
 };

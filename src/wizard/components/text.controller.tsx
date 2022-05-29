@@ -4,44 +4,18 @@ import { LabelledInput } from './labelled-input.component';
 import { ContentType } from './section.controller';
 
 type Props = {
-	columnIndex: number;
 	control: any;
 	namePrefix: string;
-	onContentTypeChange: (namePrefix: string, contentType: ContentType) => void;
+	inputStyle: CSSProperties;
 };
 
 export const TextController: React.FC<Props> = ({
-	columnIndex,
 	control,
 	namePrefix,
-	onContentTypeChange
+	inputStyle
 }) => {
-	const inputStyle: CSSProperties = {
-		marginLeft: 2,
-		width: '169px'
-	};
-
-	const contentTypes: ContentType[] = ['text', 'stack'];
-
-	const onSelectChange = (contentType: string) => {
-		onContentTypeChange(namePrefix, contentType as ContentType);
-	};
-
 	return (
-		<Col>
-			<span className='align-self-start'>Column {columnIndex + 1}</span>
-			<div className='d-flex align-items-center'>
-				<span className='align-self-start'>Type</span>
-				<Input
-					type='select'
-					onChange={(e) => onSelectChange(e.target.value)}
-					style={inputStyle}
-				>
-					{contentTypes.map((ct) => (
-						<option key={ct} label={ct} value={ct} />
-					))}
-				</Input>
-			</div>
+		<div>
 			<LabelledInput
 				label='Content'
 				control={control}
@@ -101,6 +75,6 @@ export const TextController: React.FC<Props> = ({
 				inputStyle={inputStyle}
 				name={`${namePrefix}.margin.3`}
 			/>
-		</Col>
+		</div>
 	);
 };
