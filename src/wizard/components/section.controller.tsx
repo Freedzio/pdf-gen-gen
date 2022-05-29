@@ -1,12 +1,10 @@
-import { capitalize } from 'lodash';
-import { VStack, HStack, Button, Text } from 'native-base';
 import React from 'react';
-import { Section } from '../types/wizard.values';
-import { CellController } from './cell.controller';
+import { Button, Col, Row } from 'reactstrap';
+import { TextController } from './text.controller';
 
 type Props = {
 	control: any;
-	setValue: (a: any, b: any) => void;
+	setValue: (name: any, value: any) => void;
 	getValues: (key: string) => any;
 	section: string;
 };
@@ -60,54 +58,70 @@ export const SectionController: React.FC<Props> = ({
 		contentType: ContentType
 	): boolean => Object.hasOwn(getValues(namePrefix), contentType);
 
+	const deleteColumn = (rowIndex: number, columnIndex: number) => {
+		const newRow = getRowColumns(rowIndex).filter(
+			(c: any, index: number) => index !== columnIndex
+		);
+		setValue(getRowName(rowIndex), newRow);
+	};
+
+	const deleteRow = (rowIndex: number) => {
+		const newSection = getValues(section).filter(
+			(r: any, index: number) => index !== rowIndex
+		);
+
+		setValue(section, newSection);
+	};
+
 	return (
-		<VStack borderStyle='solid' borderWidth={2} borderColor='black'>
-			{/* <Text fontSize='3xl'>{capitalize(section)}</Text> */}
+		<Col
+			style={{
+				borderStyle: 'solid',
+				borderWidth: 2,
+				borderColor: 'black'
+			}}
+		>
 			{(getValues(section) as any)?.map((row: any, rowIndex: number) => (
-				<VStack
-					borderTopWidth={2}
-					borderColor='black'
-					borderStyle='solid'
-					key={`r${rowIndex}`}
-				>
-					<HStack>
-						<Text fontSize='xl'>Row {rowIndex + 1}</Text>
-						<Button marginLeft={2} colorScheme='danger' size='xs'>
-							Delete row
-						</Button>
-					</HStack>
-					<HStack flexWrap='wrap'>
-						{(row.columns as any).map((column: any, columnIndex: number) => {
-							const namePrefix = getColumnName(rowIndex, columnIndex);
-							if (isCellOfType(namePrefix, 'text')) {
-								return (
-									<CellController
-										onContentTypeChange={onContentTypeChange}
-										columnIndex={columnIndex}
-										control={control}
-										key={`c${columnIndex}`}
-										namePrefix={namePrefix}
-									/>
-								);
-							}
-							if (isCellOfType(namePrefix, 'stack')) {
-								return (
-									<SectionController
-										control={control}
-										setValue={setValue}
-										getValues={getValues}
-										section={`${namePrefix}.stack`}
-									/>
-								);
-							}
-						})}
-						<Button alignSelf='end' onPress={() => addSectionColumn(rowIndex)}>
-							Add column
-						</Button>
-					</HStack>
-				</VStack>
+				<Row key={`r${rowIndex}`}>
+					<Col>
+						<span>Row {rowIndex + 1}</span>
+						<Button onClick={() => deleteRow(rowIndex)}>Delete row</Button>
+						<Row>
+							{(row.columns as any).map((column: any, columnIndex: number) => {
+								const namePrefix = getColumnName(rowIndex, columnIndex);
+
+								if (isCellOfType(namePrefix, 'text')) {
+									return (
+										<TextController
+											onContentTypeChange={onContentTypeChange}
+											columnIndex={columnIndex}
+											control={control}
+											namePrefix={namePrefix}
+										/>
+									);
+								}
+
+								if (isCellOfType(namePrefix, 'stack')) {
+									return (
+										<SectionController
+											control={control}
+											setValue={setValue}
+											getValues={getValues}
+											section={`${namePrefix}.stack`}
+										/>
+									);
+								}
+							})}
+							<Col>
+								<Button onClick={() => addSectionColumn(rowIndex)}>
+									Add column
+								</Button>
+							</Col>
+						</Row>
+					</Col>
+				</Row>
 			))}
-			<Button onPress={addSectionRow}>Add row</Button>
-		</VStack>
+			<Button onClick={() => addSectionRow()}>Add row</Button>
+		</Col>
 	);
 };

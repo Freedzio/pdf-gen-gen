@@ -1,5 +1,5 @@
-import { VStack, Text, HStack, Select } from 'native-base';
-import React, { useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
+import { Col, Input, Row } from 'reactstrap';
 import { LabelledInput } from './labelled-input.component';
 import { ContentType } from './section.controller';
 
@@ -10,102 +10,97 @@ type Props = {
 	onContentTypeChange: (namePrefix: string, contentType: ContentType) => void;
 };
 
-export const CellController: React.FC<Props> = ({
+export const TextController: React.FC<Props> = ({
 	columnIndex,
 	control,
 	namePrefix,
 	onContentTypeChange
 }) => {
-	const inputProps = {
-		marginX: 2,
+	const inputStyle: CSSProperties = {
+		marginLeft: 2,
 		width: '169px'
 	};
 
 	const contentTypes: ContentType[] = ['text', 'stack'];
 
-	const [selectedType, setSelectedType] = useState<ContentType>('text');
-
 	const onSelectChange = (contentType: string) => {
-		setSelectedType(contentType as ContentType);
 		onContentTypeChange(namePrefix, contentType as ContentType);
 	};
 
 	return (
-		<VStack alignItems='flex-end' borderColor='black' borderStyle='solid'>
-			<Text alignSelf='flex-start'>Column {columnIndex + 1}</Text>
-			<HStack alignItems='center'>
-				<Text w='20%' alignSelf='flex-start'>
-					Type
-				</Text>
-				<Select
-					selectedValue={selectedType}
-					onValueChange={onSelectChange}
-					{...inputProps}
+		<Col>
+			<span className='align-self-start'>Column {columnIndex + 1}</span>
+			<div className='d-flex align-items-center'>
+				<span className='align-self-start'>Type</span>
+				<Input
+					type='select'
+					onChange={(e) => onSelectChange(e.target.value)}
+					style={inputStyle}
 				>
 					{contentTypes.map((ct) => (
-						<Select.Item key={ct} label={ct} value={ct} />
+						<option key={ct} label={ct} value={ct} />
 					))}
-				</Select>
-			</HStack>
+				</Input>
+			</div>
 			<LabelledInput
 				label='Content'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.text`}
 			/>
 			<LabelledInput
 				label='Width'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.width`}
 			/>
 			<LabelledInput
 				label='Font size'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.fontSize`}
 			/>
 			<LabelledInput
 				label='Line height'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.lineHeight`}
 			/>
 			<LabelledInput
 				label='Color'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.color`}
 			/>
-			<Text alignSelf='flex-start'>Margins</Text>
+			<span className='align-self-start'>Margins</span>
 			<LabelledInput
 				isNumber
 				label='Left:'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.margin.0`}
 			/>
 			<LabelledInput
 				isNumber
 				label='Top:'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.margin.1`}
 			/>
 			<LabelledInput
 				isNumber
 				label='Right:'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.margin.2`}
 			/>
 			<LabelledInput
 				isNumber
 				label='Bottom:'
 				control={control}
-				inputProps={inputProps}
+				inputStyle={inputStyle}
 				name={`${namePrefix}.margin.3`}
 			/>
-		</VStack>
+		</Col>
 	);
 };

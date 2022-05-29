@@ -1,6 +1,6 @@
-import { IInputProps, Input } from 'native-base';
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { Input } from 'reactstrap';
 import { mapFormField } from '../helpers/map-form-field';
 
 export interface MyInputProps {
@@ -8,13 +8,13 @@ export interface MyInputProps {
 	name: string;
 	isNumber?: boolean;
 	isPercent?: boolean;
-	inputProps?: IInputProps;
+	inputStyle?: any;
 }
 
 export const InputController: React.FC<MyInputProps> = ({
 	name,
 	control,
-	inputProps,
+	inputStyle,
 	isNumber,
 	isPercent
 }) => {
@@ -24,9 +24,9 @@ export const InputController: React.FC<MyInputProps> = ({
 			name={name}
 			render={({ field }) => (
 				<Input
-					{...mapFormField(field as any, isNumber, isPercent)}
+					style={inputStyle}
+					{...mapFormField(field as any, isNumber)}
 					ref={undefined}
-					{...inputProps}
 				/>
 			)}
 		/>

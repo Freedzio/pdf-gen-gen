@@ -1,13 +1,13 @@
 import './App.scss';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { Button, Checkbox, HStack, Text, VStack, View } from 'native-base';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { Section, Wizard } from './wizard/types/wizard.values';
+import { Controller, useForm } from 'react-hook-form';
+import { Wizard } from './wizard/types/wizard.values';
 import { createDef } from './wizard-to-def';
 import { PageMarginsControl } from './wizard/components/page-margins.control';
 import { SectionController } from './wizard/components/section.controller';
 import { useEffect } from 'react';
+import { Col, Container, FormGroup, Input, Label, Row } from 'reactstrap';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function App() {
@@ -36,59 +36,61 @@ function App() {
 	});
 
 	return (
-		<HStack>
-			<VStack w='50%' padding={2}>
-				<PageMarginsControl control={control} />
-				<View marginY={4}>
+		<Container fluid>
+			<Row>
+				<Col>
+					<PageMarginsControl control={control} />
 					<Controller
 						control={control as any}
 						name='hasHeader'
 						render={({ field: { onChange, value } }) => (
-							<Checkbox isChecked={!!value} value={value} onChange={onChange}>
-								Header
-							</Checkbox>
+							<FormGroup check>
+								<Input type='checkbox' value={value} onChange={onChange} />
+								<Label check>Header</Label>
+							</FormGroup>
 						)}
 					/>
-				</View>
-				{!!values.hasHeader && (
-					// @ts-ignore
+					{!!values.hasHeader && (
+						// @ts-ignore
+						<SectionController
+							control={control}
+							setValue={setValue}
+							getValues={getValues}
+							section='header'
+						/>
+					)}
+
 					<SectionController
 						control={control}
 						setValue={setValue}
 						getValues={getValues}
-						section='header'
+						section='content'
 					/>
-				)}
-				<SectionController
-					control={control}
-					setValue={setValue}
-					getValues={getValues}
-					section='content'
-				/>
-				<View marginY={4}>
+
 					<Controller
 						control={control as any}
 						name='hasFooter'
 						render={({ field: { onChange, value } }) => (
-							<Checkbox isChecked={!!value} value={value} onChange={onChange}>
-								Footer
-							</Checkbox>
+							<FormGroup check>
+								<Input type='checkbox' value={value} onChange={onChange} />
+								<Label check>Footer</Label>
+							</FormGroup>
 						)}
 					/>
-				</View>
-				{!!values.hasFooter && (
-					<SectionController
-						control={control}
-						setValue={setValue}
-						getValues={getValues}
-						section='footer'
-					/>
-				)}
-			</VStack>
-			<VStack w='50%'>
-				<div id='iframeContainer'></div>
-			</VStack>
-		</HStack>
+					{!!values.hasFooter && (
+						<SectionController
+							control={control}
+							setValue={setValue}
+							getValues={getValues}
+							section='footer'
+						/>
+					)}
+				</Col>
+				<Col>
+					<div id='iframeContainer'></div>
+				</Col>
+			</Row>
+		</Container>
 	);
 }
 
