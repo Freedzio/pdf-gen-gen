@@ -1,5 +1,14 @@
 import React, { CSSProperties } from 'react';
-import { Button, Col, Input, Row } from 'reactstrap';
+import {
+	Button,
+	Col,
+	Input,
+	Popover,
+	PopoverBody,
+	PopoverHeader,
+	Row,
+	UncontrolledPopover
+} from 'reactstrap';
 import { TextController } from './text.controller';
 
 type Props = {
@@ -69,7 +78,7 @@ export const SectionController: React.FC<Props> = ({
 		const newRow = getRowColumns(rowIndex).filter(
 			(c: any, index: number) => index !== columnIndex
 		);
-		setValue(getRowName(rowIndex), newRow);
+		setValue(getRowName(rowIndex), { columns: newRow });
 	};
 
 	const deleteRow = (rowIndex: number) => {
@@ -90,31 +99,19 @@ export const SectionController: React.FC<Props> = ({
 				/>
 			);
 		}
-
-		if (isCellOfType(namePrefix, 'stack')) {
-			return (
-				<SectionController
-					control={control}
-					setValue={setValue}
-					getValues={getValues}
-					section={`${namePrefix}.stack`}
-				/>
-			);
-		}
 	};
 
 	return (
-		<Row>
+		<Row
+			style={{
+				borderStyle: 'solid',
+				borderRightWidth: 2,
+				borderColor: 'black'
+			}}
+		>
 			<Col>
 				{(getValues(section) as any)?.map((row: any, rowIndex: number) => (
-					<Row
-						key={`r${rowIndex}`}
-						style={{
-							borderStyle: 'solid',
-							borderRightWidth: 2,
-							borderColor: 'black'
-						}}
-					>
+					<Row key={`r${rowIndex}`}>
 						<Col>
 							<Row>
 								<Col>
@@ -131,30 +128,58 @@ export const SectionController: React.FC<Props> = ({
 									(column: any, columnIndex: number) => {
 										const namePrefix = getColumnName(rowIndex, columnIndex);
 
-										return (
-											<Col>
-												<span className='align-self-start'>
+										return isCellOfType(namePrefix, 'stack') ? (
+											<Col sm='auto' key={namePrefix}>
+												<SectionController
+													control={control}
+													setValue={setValue}
+													getValues={getValues}
+													section={`${namePrefix}.stack`}
+												/>
+											</Col>
+										) : (
+											<Col key={namePrefix} sm='auto'>
+												<Button
+													type='button'
+													id={`r${rowIndex}c${columnIndex}`}
+													className='align-self-start'
+												>
 													Column {columnIndex + 1}
-												</span>
-
-												<div className='d-flex align-items-center justify-content-between'>
-													<span className='align-self-start'>Type</span>
-													<Input
-														type='select'
-														style={inputStyle}
-														onChange={(e) =>
-															onContentTypeChange(
-																namePrefix,
-																e.target.value as ContentType
-															)
-														}
-													>
-														{contentTypes.map((ct) => (
-															<option key={ct} label={ct} value={ct} />
-														))}
-													</Input>
-												</div>
-												{getCellController(namePrefix)}
+												</Button>
+												<UncontrolledPopover
+													trigger='legacy'
+													target={`r${rowIndex}c${columnIndex}`}
+												>
+													<PopoverBody>
+														<div className='d-flex align-items-center justify-content-between'>
+															<span className='align-self-start'>Type</span>
+															<Input
+																type='select'
+																style={inputStyle}
+																onChange={(e) =>
+																	onContentTypeChange(
+																		namePrefix,
+																		e.target.value as ContentType
+																	)
+																}
+															>
+																{contentTypes.map((ct) => (
+																	<option key={ct} label={ct} value={ct} />
+																))}
+															</Input>
+														</div>
+														{getCellController(namePrefix)}
+														<Button
+															onClick={() =>
+																deleteColumn(rowIndex, columnIndex)
+															}
+															color='danger'
+															className='ml-auto'
+														>
+															Delete column
+														</Button>
+													</PopoverBody>
+												</UncontrolledPopover>
 											</Col>
 										);
 									}
