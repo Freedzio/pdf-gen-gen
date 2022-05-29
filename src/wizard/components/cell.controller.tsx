@@ -31,13 +31,7 @@ export const CellController: React.FC<Props> = ({
 	};
 
 	return (
-		<VStack
-			alignItems='flex-end'
-			borderRightWidth={2}
-			borderTopWidth={2}
-			borderColor='black'
-			borderStyle='solid'
-		>
+		<VStack alignItems='flex-end' borderColor='black' borderStyle='solid'>
 			<Text alignSelf='flex-start'>Column {columnIndex + 1}</Text>
 			<HStack alignItems='center'>
 				<Text w='20%' alignSelf='flex-start'>
