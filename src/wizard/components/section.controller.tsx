@@ -1,15 +1,9 @@
-import React, { CSSProperties } from 'react';
-import {
-	Button,
-	Col,
-	Input,
-	Popover,
-	PopoverBody,
-	PopoverHeader,
-	Row,
-	UncontrolledPopover
-} from 'reactstrap';
-import { TextController } from './text.controller';
+import React from 'react';
+import { Button, Col, Row } from 'reactstrap';
+import { textCell } from '../cells/text.cell';
+import { getRowName } from '../helpers/get-row-name';
+import { isCellOfType } from '../helpers/is-cell-of-type';
+import { ColumnController } from './column.controller';
 
 type Props = {
 	control: any;
@@ -19,31 +13,6 @@ type Props = {
 };
 
 export type ContentType = 'stack' | 'text';
-
-const textCell = {
-	text: 'New column',
-	width: '*',
-	margin: [10, 10, 10, 10],
-	fontSize: 14,
-	lineHeight: 1,
-	color: 'black'
-};
-
-const stackCell = {
-	stack: []
-};
-
-const cellDict = {
-	text: textCell,
-	stack: stackCell
-};
-
-const inputStyle: CSSProperties = {
-	marginLeft: 2,
-	width: '169px'
-};
-
-const contentTypes: ContentType[] = ['text', 'stack'];
 
 export const SectionController: React.FC<Props> = ({
 	control,
@@ -56,30 +25,13 @@ export const SectionController: React.FC<Props> = ({
 	const getRowColumns = (rowIndex: number) => rows[rowIndex].columns;
 
 	const addSectionRow = () =>
-		setValue(getRowName(rows.length), { columns: [textCell] });
-
-	const getRowName = (rowIndex: number) => `${section}.${rowIndex}`;
+		setValue(getRowName(section, rows.length), { columns: [textCell] });
 
 	const addSectionColumn = (rowIndex: number) =>
 		setValue(getColumnName(rowIndex, getRowColumns(rowIndex).length), textCell);
 
 	const getColumnName = (rowIndex: number, columnIndex: number) =>
-		`${getRowName(rowIndex)}.columns.${columnIndex}`;
-
-	const onContentTypeChange = (namePrefix: string, contentType: ContentType) =>
-		setValue(namePrefix, cellDict[contentType]);
-
-	const isCellOfType = (
-		namePrefix: string,
-		contentType: ContentType
-	): boolean => Object.hasOwn(getValues(namePrefix), contentType);
-
-	const deleteColumn = (rowIndex: number, columnIndex: number) => {
-		const newRow = getRowColumns(rowIndex).filter(
-			(c: any, index: number) => index !== columnIndex
-		);
-		setValue(getRowName(rowIndex), { columns: newRow });
-	};
+		`${getRowName(section, rowIndex)}.columns.${columnIndex}`;
 
 	const deleteRow = (rowIndex: number) => {
 		const newSection = getValues(section).filter(
@@ -89,16 +41,11 @@ export const SectionController: React.FC<Props> = ({
 		setValue(section, newSection);
 	};
 
-	const getCellController = (namePrefix: string) => {
-		if (isCellOfType(namePrefix, 'text')) {
-			return (
-				<TextController
-					inputStyle={inputStyle}
-					control={control}
-					namePrefix={namePrefix}
-				/>
-			);
-		}
+	const onColumnDelete = (rowIndex: number, columnIndex: number) => {
+		const newRow = getRowColumns(rowIndex).filter(
+			(c: any, index: number) => index !== columnIndex
+		);
+		setValue(getRowName(section, rowIndex), { columns: newRow });
 	};
 
 	return (
@@ -128,7 +75,7 @@ export const SectionController: React.FC<Props> = ({
 									(column: any, columnIndex: number) => {
 										const namePrefix = getColumnName(rowIndex, columnIndex);
 
-										return isCellOfType(namePrefix, 'stack') ? (
+										return isCellOfType(getValues(namePrefix), 'stack') ? (
 											<Col sm='auto' key={namePrefix}>
 												<SectionController
 													control={control}
@@ -138,49 +85,17 @@ export const SectionController: React.FC<Props> = ({
 												/>
 											</Col>
 										) : (
-											<Col key={namePrefix} sm='auto'>
-												<Button
-													type='button'
-													id={`r${rowIndex}c${columnIndex}`}
-													className='align-self-start'
-												>
-													Column {columnIndex + 1}
-												</Button>
-												<UncontrolledPopover
-													trigger='legacy'
-													target={`r${rowIndex}c${columnIndex}`}
-												>
-													<PopoverBody>
-														<div className='d-flex align-items-center justify-content-between'>
-															<span className='align-self-start'>Type</span>
-															<Input
-																type='select'
-																style={inputStyle}
-																onChange={(e) =>
-																	onContentTypeChange(
-																		namePrefix,
-																		e.target.value as ContentType
-																	)
-																}
-															>
-																{contentTypes.map((ct) => (
-																	<option key={ct} label={ct} value={ct} />
-																))}
-															</Input>
-														</div>
-														{getCellController(namePrefix)}
-														<Button
-															onClick={() =>
-																deleteColumn(rowIndex, columnIndex)
-															}
-															color='danger'
-															className='ml-auto'
-														>
-															Delete column
-														</Button>
-													</PopoverBody>
-												</UncontrolledPopover>
-											</Col>
+											<ColumnController
+												rowIndex={rowIndex}
+												columnIndex={columnIndex}
+												setValue={setValue}
+												getValues={getValues}
+												namePrefix={namePrefix}
+												control={control}
+												onColumnDelete={() =>
+													onColumnDelete(rowIndex, columnIndex)
+												}
+											/>
 										);
 									}
 								)}
@@ -196,7 +111,7 @@ export const SectionController: React.FC<Props> = ({
 						</Col>
 					</Row>
 				))}
-				<Button onClick={() => addSectionRow()} color='primary'>
+				<Button onClick={addSectionRow} color='primary'>
 					Add row
 				</Button>
 			</Col>
