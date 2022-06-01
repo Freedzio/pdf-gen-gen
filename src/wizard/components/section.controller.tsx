@@ -3,7 +3,8 @@ import { Button, Col, Row } from 'reactstrap';
 import { textCell } from '../cells/text.cell';
 import { getRowName } from '../helpers/get-row-name';
 import { isCellOfType } from '../helpers/is-cell-of-type';
-import { ColumnController } from './column.controller';
+import { CellTypeController } from './cell-type.controller';
+import { ColumnController, inputStyle } from './column.controller';
 
 type Props = {
 	control: any;
@@ -12,7 +13,7 @@ type Props = {
 	section: string;
 };
 
-export type ContentType = 'stack' | 'text';
+export type ContentType = 'stack' | 'text' | 'qr';
 
 export const SectionController: React.FC<Props> = ({
 	control,
@@ -76,7 +77,20 @@ export const SectionController: React.FC<Props> = ({
 										const namePrefix = getColumnName(rowIndex, columnIndex);
 
 										return isCellOfType(getValues(namePrefix), 'stack') ? (
-											<Col sm='auto' key={namePrefix}>
+											<Col
+												style={{
+													borderStyle: 'solid',
+													borderRightWidth: 2,
+													borderColor: 'black'
+												}}
+												sm='auto'
+												key={namePrefix}
+											>
+												<CellTypeController
+													namePrefix={namePrefix}
+													inputStyle={inputStyle}
+													setValue={setValue}
+												/>
 												<SectionController
 													control={control}
 													setValue={setValue}
